@@ -5,6 +5,11 @@ import pytest
 
 VALID_DATES = [
     pytest.param("2025-12-31", id="end_of_year"),
+    # 🟢 | AI
+    #
+    # date.today() вычисляется при импорте модуля (на этапе сбора тестов): при
+    # прогоне через полночь «сегодня» уже вчера. А «future» = 2030-01-01 со временем
+    # перестанет быть будущим — лучше считать от текущей даты (today + 1 год).
     pytest.param(date.today().isoformat(), id="today"),
     pytest.param("2024-02-29", id="leap_day"),
     pytest.param("2030-01-01", id="future"),
@@ -96,6 +101,13 @@ class TestCalendarNegative:
         assert calendar_page.form.has_message(calendar_page.INVALID_DATE_MESSAGE)
 
     @allure.title("C-N4. Форма с пустой датой не отправляется")
+    # 🟡 | AI
+    #
+    # Единственное доказательство отказа здесь — «нет класса успеха за 3 с» и
+    # отсутствие contact-form-sent в URL, проверенное сразу после этого. При
+    # медленном сервере форма может отправиться позже, и тест ложно зелёный. Нужен
+    # положительный признак: is_date_invalid() и/или текст «This field is required.»,
+    # как в C-N1..N3 и M-N4.
     def test_empty_date(self, calendar_page):
         calendar_page.type_date("")
         calendar_page.submit()

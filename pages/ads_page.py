@@ -35,6 +35,10 @@ class AdsPage(BasePage):
         with allure.step("Проверить, что затемнение рекламы скрыто"):
             return self.wait_all_invisible(self.AD_OVERLAY, timeout)
 
+    # 🟢 | AI
+    #
+    # Шаг называется «…под рекламой», но этот же метод вызывается в A-07 уже после
+    # закрытия рекламы — в отчёте шаг вводит в заблуждение.
     @allure.step("Кликнуть по заголовку страницы под рекламой")
     def click_heading(self) -> None:
         self.find_visible(self.HEADING).click()

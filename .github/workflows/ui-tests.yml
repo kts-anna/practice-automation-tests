@@ -17,6 +17,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # 🟢 | AI
+      #
+      # README обещает Firefox, но в CI проверяется только Chrome — добавьте matrix по
+      # браузерам. Ещё: нет кэша pip (actions/setup-python, cache: pip), а в артефакт
+      # кладутся только сырые allure-results — собранный отчёт (allure generate) или
+      # публикация на GitHub Pages сделали бы его доступным без локального Allure.
       - name: Run tests (Chrome headless)
         run: pytest --browser=chrome --headless
 

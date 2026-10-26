@@ -74,6 +74,11 @@ def pytest_runtest_makereport(item, call):
     """При падении теста прикладывает к Allure-отчёту скриншот, URL и HTML страницы."""
     outcome = yield
     report = outcome.get_result()
+    # 🟢 | AI
+    #
+    # Скриншот снимается только при падении в фазе call. Если тест упал в setup
+    # (например, страница не открылась в фикстуре *_page), вложений не будет —
+    # условие стоит расширить до report.when in ("setup", "call").
     if report.when != "call" or not report.failed:
         return
     drv = item.funcargs.get("driver")
@@ -96,6 +101,9 @@ def pytest_sessionfinish(session):
     alluredir = session.config.getoption("--alluredir", default=None)
     if not alluredir:
         return
+    # 🟢 | AI
+    #
+    # Импорты внутри функции без причины — лучше перенести в начало файла.
     import os
     import platform
     import selenium

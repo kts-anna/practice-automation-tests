@@ -61,6 +61,13 @@ class TestAdsNegative:
 
     @allure.title("A-N1. Реклама не показывается сразу после загрузки страницы")
     def test_ad_not_shown_immediately(self, ads_page):
+        # 🟡 | AI
+        #
+        # Проверка с timeout=0 сразу после open() при page_load_strategy=eager идёт до
+        # того, как скрипты Popup Maker вообще успели отработать. Тест пройдёт, даже
+        # если реклама показывается мгновенно после загрузки. Надёжнее проверить, что
+        # окно не появилось за несколько секунд меньше заявленной задержки:
+        # ads_page.stays_invisible(ads_page.ad.CONTAINER, 3).
         assert not ads_page.ad.is_open(), "Реклама показалась без задержки"
 
     @allure.title("A-N2. Пока реклама открыта, клик по странице перехватывается окном")

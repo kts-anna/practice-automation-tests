@@ -21,6 +21,11 @@ class ModalsPage(BasePage):
         self.simple_modal = Popup(self, "a simple modal", "Simple Modal")
         self.form_modal = Popup(self, "Modal Containing A Form", "Form Modal")
         fm = self.form_modal
+        # 🟢 | AI
+        #
+        # Локаторы-атрибуты экземпляра названы КАПСОМ, как константы класса, — на других
+        # страницах так называются атрибуты класса. Читателю непонятно, что это
+        # вычисляется в __init__; лучше name_input и т. д. или свойства.
         self.NAME_INPUT = fm.child(".//input[@type='text'][contains(@id,'name')]")
         self.EMAIL_INPUT = fm.child(".//input[@type='email']")
         self.MESSAGE_INPUT = fm.child(".//textarea[not(contains(@name,'ak_'))]")
@@ -40,6 +45,13 @@ class ModalsPage(BasePage):
     @allure.step("Нажать кнопку «Form Modal»")
     def open_form_modal(self) -> Popup:
         self.click(self.FORM_MODAL_BUTTON)
+        # 🟢 | AI
+        #
+        # Результат is_open(5) отбрасывается: если окно не открылось, шаг в Allure
+        # «Проверить, что окно отображается» всё равно будет зелёным, а падение случится
+        # позже на заполнении полей с непонятной ошибкой. Плюс open_simple_modal не
+        # ждёт вовсе — методы ведут себя по-разному. Лучше один wait_open(), который
+        # бросает исключение с понятным сообщением.
         self.form_modal.is_open(5)
         return self.form_modal
 

@@ -16,6 +16,11 @@ class Popup:
         self.name = name
         self._xpath = (
             "//div[contains(@class,'pum-container')]"
+            # 🟢 | AI
+            #
+            # marker_text подставляется в XPath в одинарных кавычках: текст с апострофом
+            # (например, «Don't») сломает локатор. Сейчас таких нет, но компонент
+            # переиспользуемый — стоит экранировать или выбирать кавычки по содержимому.
             f"[contains(normalize-space(.), '{marker_text}')]"
         )
         self.CONTAINER: Locator = (By.XPATH, self._xpath)

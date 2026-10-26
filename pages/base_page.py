@@ -52,6 +52,13 @@ class BasePage:
     def click(self, locator: Locator, timeout: float | None = None) -> None:
         element = self._wait(timeout).until(EC.element_to_be_clickable(locator))
         self.scroll_to(element)
+        # 🟡 | AI
+        #
+        # Запасной клик через JavaScript прячет дефекты: если кнопку перекрывает overlay
+        # или другое окно, пользователь кликнуть не сможет, а тест пройдёт. Через этот
+        # метод идут все клики проекта, включая закрытие рекламы и модалок. Лучше убрать
+        # fallback и пусть тест падает; если где-то JS-клик действительно нужен — отдельный
+        # явный метод js_click() с объяснением, почему.
         try:
             element.click()
         except ElementClickInterceptedException:
@@ -65,6 +72,9 @@ class BasePage:
             element.clear()
         element.send_keys(text)
 
+    # 🟢 | AI
+    #
+    # press_escape нигде не используется — можно удалить.
     def press_escape(self, locator: Locator) -> None:
         self.find(locator).send_keys(Keys.ESCAPE)
 

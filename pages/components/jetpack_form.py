@@ -22,6 +22,14 @@ class JetpackForm:
 
     def _wait_submitted(self, timeout: float) -> bool:
         try:
+            # 🟡 | AI
+            #
+            # Вложенное ожидание: внутри lambda вызывается page.find(), у которого свой
+            # WebDriverWait на DEFAULT_TIMEOUT (10 с). Если формы в DOM нет (перезагрузка,
+            # перерисовка), каждый опрос висит 10 с, и is_not_submitted(3) на деле ждёт
+            # 10+ с, а TimeoutException внутреннего ожидания молча превращается в «не
+            # отправлена». То же в has_message и _aria_invalid. Внутри until лучше брать
+            # элемент через driver.find_elements(*self.FORM) без собственного ожидания.
             self.page._wait(timeout).until(lambda _: SUCCESS_CLASS in self._form_classes())
             return True
         except TimeoutException:
@@ -31,6 +39,11 @@ class JetpackForm:
         with allure.step("Проверить, что форма успешно отправлена"):
             return self._wait_submitted(timeout)
 
+    # 🟢 | AI
+    #
+    # «Не отправилась за 3 с» само по себе не доказывает отказ: при медленном ответе
+    # сервера негативный тест станет зелёным. В паре с ним всегда проверяйте
+    # положительный признак отказа — aria-invalid или текст ошибки (в C-N4 этого нет).
     def is_not_submitted(self, seconds: float = 3) -> bool:
         with allure.step(f"Проверить, что форма не отправилась за {seconds} с"):
             return not self._wait_submitted(seconds)
